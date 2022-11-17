@@ -35,7 +35,7 @@ public class CountryService {
             if (searchParameter.equals(SearchParameter.COUNTRY_NAME)) {
                 responseCode = validateName(searchValue);
                 if (ResponseCode.SUCCESS.equals(responseCode)) {
-                    final ResponseEntity<Country[]> response = getResponseEntity(searchValue);
+                    final ResponseEntity<Country[]> response = restTemplate.getForEntity(URL_COUNTRY_NAME + searchValue, Country[].class);
                     List<Country> countries = Arrays.asList(response.getBody());
 
                     if (countries.size() != 1) {
@@ -43,7 +43,7 @@ public class CountryService {
                     }
 
                     capital = countries.get(0).getCapital();
-                    System.out.println("The capital of " + countries.get(0).name + " is " + capital);
+                    System.out.println("The capital of " + countries.get(0).getName() + " is " + capital);
                 } else {
                     return new ResponseBody(responseCode, BLANK_STRING);
                 }
@@ -55,7 +55,7 @@ public class CountryService {
                     Country country = response.getBody();
                     capital = country == null ? BLANK_STRING : country.getCapital();
 
-                    System.out.println("The capital of " + country.name + " is " + capital);
+                    System.out.println("The capital of " + country.getName() + " is " + capital);
                 } else {
                     return new ResponseBody(responseCode, BLANK_STRING);
                 }
@@ -66,11 +66,6 @@ public class CountryService {
         }
 
         return new ResponseBody(ResponseCode.SUCCESS, capital);
-    }
-
-    private ResponseEntity<Country[]> getResponseEntity(String searchValue) {
-        final ResponseEntity<Country[]> response = restTemplate.getForEntity(URL_COUNTRY_NAME + searchValue, Country[].class);
-        return response;
     }
 
     private ResponseCode validateName(String countryName) {
